@@ -2,7 +2,7 @@
 An appscript project created to cycle through a Google spreadsheet, create a new workbook, attach it to an email, and send that email to the intended recipient in bulk. Highly specific use case. Cannot add spreadsheet data; sensitive info.
 
 1. Main spreadsheet contains three tabs: 
-	\na. Sender Sheet tab
+	/na. Sender Sheet tab
 	b. Inventory Template
 	c. Example Template
 
