@@ -8,40 +8,62 @@ function main() {
   let schoolName = [];
 
   // add all schools to school array
-  for (i = 1; i < senderData.length - 1; i++) {
+  for (k = 1; k < senderData.length - 1; k++) {
 
-    if (!schoolName.includes(senderData[i][0])) {
-      schoolName.push(senderData[i][0]);
+    if (!schoolName.includes(senderData[k][0])) {
+      schoolName.push(senderData[k][0]);
     }
   }
+  console.log(schoolName);
 
   // start of school array
-  for (i = 0; i < schoolName.length; i++) {
+  schoolLoop: for (i = 0; i < schoolName.length; i++) {
     let recipients = [];
+    ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    for (j = 1; j < senderData.length; j++) {
+    // main student list initialization
+    senderSheet = "Sender Sheet";
+    senderList = ss.getSheetByName(senderSheet);
+    senderData = senderList.getDataRange().getValues();
+    console.log("array start");
 
+    sendingLoop: for (j = 1; j < senderData.length - 1; j++) {
+      if ((schoolName[i] == senderData[j][0]) && senderData[j][5] == true) {
+        console.log("Skipping");
+        continue schoolLoop;
+      }
+      //console.log(senderData[j][5] + " and NOT SKIPPED");
+
+      // console.log(schoolName[i]+ " and " + senderData[j][0]);
       // if cell contains current school
       if (schoolName[i] == senderData[j][0]) {
+        console.log("same school");
 
         // add teacher if not duplicate
-        if (!recipients.includes(senderData[j][2])) {
+        if (!recipients.includes(senderData[j][2]) && (senderData[j][2] != null)) {
           recipients.push(senderData[j][2]);
+          //console.log(senderData[j][2]);
         }
 
         // add principal if not duplicate
-        if (!recipients.includes(senderData[j][4])) {
+        if (!recipients.includes(senderData[j][4]) && (senderData[j][4] != null)) {
           recipients.push(senderData[j][4]);
         }
+
+        // recipients.forEach(function (entry) {
+        //  console.log(entry);
+        // });
+
         senderList.getRange(j + 1, 6).setValue(true); //change emailsent value check to true
       }
     }
 
     // generate school spreadsheet and create url for email
-    let sheetId = createSheet(ss, schoolName[i], recipients); // returns sheet id for the next function
 
+    // returns sheet id for the next function
     // create and send email to recipients
-    attachAndSend(recipients, schoolName[i], sheetId);
+    console.log(recipients + " and " + schoolName[i]);
+    attachAndSend(recipients, schoolName[i], createSheet(ss, schoolName[i], recipients));
 
     // clear recipients array for next school
     recipients = [];
@@ -68,5 +90,3 @@ function createSheet(ss, schoolName, editorArray) {
   newSS.addEditors(editorArray);
   return newSS.getId();
 }
-
-
